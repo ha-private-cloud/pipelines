@@ -1,0 +1,49 @@
+name: app-release
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+      deploy:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    if: ${{ !inputs.deploy }}
+    runs-on: [self-hosted]
+    steps:
+      - name: Sync cluster-cli
+        run: sync-repos.sh cluster-cli
+
+      - name: Sync repo checkout to this tag
+        run: |
+          git -C "$HOME/project/${{ inputs.app }}" fetch origin --tags
+          git -C "$HOME/project/${{ inputs.app }}" checkout "${{ inputs.tag }}"
+
+      - name: Build and push release image
+        run: |
+          cluster-cli build "$HOME/project/${{ inputs.app }}" \
+            --namespace clusterkeep-prd-pub \
+            --tag "${{ inputs.tag }}" \
+            --no-deploy
+
+  deploy:
+    if: ${{ inputs.deploy }}
+    runs-on: [self-hosted]
+    steps:
+      - name: Sync cluster-cli
+        run: sync-repos.sh cluster-cli
+
+      - name: Deploy release to prd
+        run: |
+          cluster-cli deploy \
+            --app ${{ inputs.app }} \
+            --namespace clusterkeep-prd-pub \
+            --tag "${{ inputs.tag }}"
