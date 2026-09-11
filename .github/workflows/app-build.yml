@@ -52,6 +52,9 @@ jobs:
 
       - name: Sync repo checkout to this commit
         run: |
+          if [ ! -d "$HOME/project/${{ inputs.app }}/.git" ]; then
+            git clone "git@github.com:ha-private-cloud/${{ inputs.app }}.git" "$HOME/project/${{ inputs.app }}"
+          fi
           git -C "$HOME/project/${{ inputs.app }}" fetch origin "${{ github.ref_name }}"
           git -C "$HOME/project/${{ inputs.app }}" checkout -B "${{ github.ref_name }}" "${{ github.sha }}"
 

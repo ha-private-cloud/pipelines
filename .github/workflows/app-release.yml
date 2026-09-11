@@ -32,6 +32,9 @@ jobs:
 
       - name: Sync repo checkout to this tag
         run: |
+          if [ ! -d "$HOME/project/${{ inputs.app }}/.git" ]; then
+            git clone "git@github.com:ha-private-cloud/${{ inputs.app }}.git" "$HOME/project/${{ inputs.app }}"
+          fi
           git -C "$HOME/project/${{ inputs.app }}" fetch origin --tags
           git -C "$HOME/project/${{ inputs.app }}" checkout "${{ inputs.tag }}"
 
