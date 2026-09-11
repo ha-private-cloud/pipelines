@@ -13,6 +13,14 @@ on:
         required: false
         type: boolean
         default: false
+      namespace_suffix:
+        required: false
+        type: string
+        default: pub
+      namespace_override:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
@@ -30,7 +38,7 @@ jobs:
       - name: Build and push release image
         run: |
           cluster-cli build "$HOME/project/${{ inputs.app }}" \
-            --namespace clusterkeep-prd-pub \
+            --namespace "${{ inputs.namespace_override || format('clusterkeep-prd-{0}', inputs.namespace_suffix) }}" \
             --tag "${{ inputs.tag }}" \
             --no-deploy
 
@@ -45,5 +53,5 @@ jobs:
         run: |
           cluster-cli deploy \
             --app ${{ inputs.app }} \
-            --namespace clusterkeep-prd-pub \
+            --namespace "${{ inputs.namespace_override || format('clusterkeep-prd-{0}', inputs.namespace_suffix) }}" \
             --tag "${{ inputs.tag }}"

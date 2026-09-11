@@ -6,6 +6,14 @@ on:
       app:
         required: true
         type: string
+      namespace_suffix:
+        required: false
+        type: string
+        default: pub
+      namespace_override:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
@@ -16,19 +24,19 @@ jobs:
         run: |
           case "${{ github.ref_name }}" in
             development)
-              echo "namespace=clusterkeep-dev-pub" >> "$GITHUB_OUTPUT"
+              echo "namespace=${{ inputs.namespace_override || format('clusterkeep-dev-{0}', inputs.namespace_suffix) }}" >> "$GITHUB_OUTPUT"
               echo "workspace=default" >> "$GITHUB_OUTPUT"
               echo "tofu_args=" >> "$GITHUB_OUTPUT"
               echo "deploy=true" >> "$GITHUB_OUTPUT"
               ;;
             preview)
-              echo "namespace=clusterkeep-prv-pub" >> "$GITHUB_OUTPUT"
+              echo "namespace=${{ inputs.namespace_override || format('clusterkeep-prv-{0}', inputs.namespace_suffix) }}" >> "$GITHUB_OUTPUT"
               echo "workspace=prv" >> "$GITHUB_OUTPUT"
               echo "tofu_args=-var-file=prv.tfvars" >> "$GITHUB_OUTPUT"
               echo "deploy=true" >> "$GITHUB_OUTPUT"
               ;;
             main)
-              echo "namespace=clusterkeep-prd-pub" >> "$GITHUB_OUTPUT"
+              echo "namespace=${{ inputs.namespace_override || format('clusterkeep-prd-{0}', inputs.namespace_suffix) }}" >> "$GITHUB_OUTPUT"
               echo "workspace=prd" >> "$GITHUB_OUTPUT"
               echo "tofu_args=-var-file=prd.tfvars" >> "$GITHUB_OUTPUT"
               echo "deploy=false" >> "$GITHUB_OUTPUT"
