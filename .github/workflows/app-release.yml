@@ -27,8 +27,8 @@ jobs:
     if: ${{ !inputs.deploy }}
     runs-on: [self-hosted]
     steps:
-      - name: Sync cluster-cli
-        run: sync-repos.sh cluster-cli
+      - name: Sync cluster-cli and charts
+        run: sync-repos.sh cluster-cli charts
 
       - name: Sync repo checkout to this tag
         run: |
@@ -49,8 +49,8 @@ jobs:
     if: ${{ inputs.deploy }}
     runs-on: [self-hosted]
     steps:
-      - name: Sync cluster-cli
-        run: sync-repos.sh cluster-cli
+      - name: Sync cluster-cli and charts
+        run: sync-repos.sh cluster-cli charts
 
       - name: Deploy release to prd
         run: |

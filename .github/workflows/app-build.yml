@@ -47,8 +47,8 @@ jobs:
               ;;
           esac
 
-      - name: Sync cluster-cli
-        run: sync-repos.sh cluster-cli
+      - name: Sync cluster-cli and charts
+        run: sync-repos.sh cluster-cli charts
 
       - name: Sync repo checkout to this commit
         run: |
