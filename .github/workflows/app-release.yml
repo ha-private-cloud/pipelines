@@ -52,9 +52,17 @@ jobs:
       - name: Sync cluster-cli and charts
         run: sync-repos.sh cluster-cli charts
 
-      - name: Deploy release to prd
+      - name: Ensure repo checkout exists
         run: |
-          cluster-cli deploy \
-            --app ${{ inputs.app }} \
-            --namespace "${{ inputs.namespace_override || format('clusterkeep-prd-{0}', inputs.namespace_suffix) }}" \
-            --tag "${{ inputs.tag }}"
+          if [ ! -d "$HOME/project/${{ inputs.app }}/.git" ]; then
+            git clone "git@github.com:ha-private-cloud/${{ inputs.app }}.git" "$HOME/project/${{ inputs.app }}"
+          fi
+
+      - name: Deploy release to prd via tofu
+        env:
+          TF_WORKSPACE: prd
+        run: |
+          cluster-cli tofu ${{ inputs.app }} --tag "${{ inputs.tag }}" init -input=false
+          cluster-cli tofu ${{ inputs.app }} --tag "${{ inputs.tag }}" apply -input=false -auto-approve \
+            -var-file=prd.tfvars \
+            -var "image_tag=${{ inputs.tag }}"
