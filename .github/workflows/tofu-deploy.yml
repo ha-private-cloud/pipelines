@@ -13,6 +13,10 @@ on:
         required: false
         type: boolean
         default: false
+      tofu_args:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   plan:
@@ -26,7 +30,7 @@ jobs:
         run: cluster-cli tofu ${{ inputs.repo }} --tag "${{ inputs.tag }}" init -input=false
 
       - name: tofu plan
-        run: cluster-cli tofu ${{ inputs.repo }} plan -input=false
+        run: cluster-cli tofu ${{ inputs.repo }} plan -input=false ${{ inputs.tofu_args }}
 
   apply:
     if: ${{ inputs.apply }}
@@ -39,4 +43,4 @@ jobs:
         run: cluster-cli tofu ${{ inputs.repo }} --tag "${{ inputs.tag }}" init -input=false
 
       - name: tofu apply
-        run: cluster-cli tofu ${{ inputs.repo }} apply -auto-approve -input=false
+        run: cluster-cli tofu ${{ inputs.repo }} apply -auto-approve -input=false ${{ inputs.tofu_args }}
